@@ -7,3 +7,5 @@ handlers:
   - url: /(.*)
     static_files: build/\1
     upload: build/(.*)
+app:
+  use_deprecated_preparation: true
