@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   font-family: Arial, sans-serif;
-  background-image: url('../public/gakori.jpg');
+  background-image: url('gakori.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
