@@ -36,6 +36,10 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker europe-north1-docker.pkg.dev
+
       - name: Push Docker image to Google Container Registry
         run: |
           gcloud auth configure-docker
