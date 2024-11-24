@@ -17,5 +17,6 @@ spec:
       containers:
         - name: react-app
           image: europe-north1-docker.pkg.dev/portfolio-project-441523/portfolio-repo/react-app:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
