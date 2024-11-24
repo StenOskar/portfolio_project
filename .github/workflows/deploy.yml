@@ -42,7 +42,6 @@ jobs:
 
       - name: Push Docker image to Google Container Registry
         run: |
-          gcloud auth configure-docker
           docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
 
   deploy:
@@ -63,24 +62,16 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
-      - name: Set GKE Auth Plugin Environment Variable
-        run: |
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
       - name: Install GKE Auth Plugin
         run: |
           gcloud components install gke-gcloud-auth-plugin
-          gcloud components update
-
-      - name: Set GKE Auth Plugin Environment Variable
-        run: |
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
       - name: Configure kubectl
         run: |
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials portfolio-cluster-1 --region europe-north1
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/deployment.yaml --validate=false
+          kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
