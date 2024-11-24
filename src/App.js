@@ -8,7 +8,7 @@ function App() {
           <h1>Welcome to the portfolio assignment</h1>
           <p>This is a simple React setup to use delivery pipeline for the portfolio assignment in IDATA2502</p>
             <p>by Sten Oskar Halse</p>
-            <p>Yippi</p>
+            <p>Yeah</p>
         </header>
       </div>
   );
