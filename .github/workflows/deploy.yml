@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Define environment variables for reusability
+      - name: Set environment variables
+        run: |
+          echo "IMAGE_NAME=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
       # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,21 +26,17 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
-      - name: Install dependencies
+      # Install system dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
       # Install npm dependencies
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
-
-      # Install additional packages
-      - name: Install additional packages
-        run: |
-          npm install canvas --save-dev
-          npm install @babel/plugin-proposal-private-property-in-object --save-dev
 
       # Run tests
       - name: Run Tests
@@ -44,13 +46,7 @@ jobs:
       - name: Build the app
         run: npm run build
 
-      # Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} .
-          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
-
-      # Set up gcloud SDK and Authenticate with Google Cloud
+      # Set up gcloud SDK and authenticate
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -58,42 +54,59 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
-      # Configure Docker for Artifact Registry
-      - name: Configure Docker for Artifact Registry
+      # Authenticate Docker with Artifact Registry
+      - name: Authenticate Docker with Artifact Registry
         run: |
           gcloud auth configure-docker europe-north1-docker.pkg.dev
 
-      # Push Docker image to Artifact Registry
-      - name: Push Docker image to Google Container Registry
-        run: |
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
+      # Build and push Docker image with caching
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:cache,mode=max
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
+      # Define environment variables for reusability
+      - name: Set environment variables
+        run: |
+          echo "IMAGE_NAME=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
       # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up gcloud SDK and Authenticate with Google Cloud
+      # Set up gcloud SDK and authenticate
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
-          install_components: 'gke-gcloud-auth-plugin'
+          install_components: |
+            kubectl
+            gke-gcloud-auth-plugin
 
-      # Configure kubectl
-      - name: Configure kubectl
-        run: |
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          gcloud container clusters get-credentials portfolio-cluster-1 --region europe-north1
+      # Get GKE credentials
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: portfolio-cluster-1
+          location: europe-north1
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
 
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
+          kubectl set image deployment/react-app react-app=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           kubectl apply -f k8s/service.yaml
