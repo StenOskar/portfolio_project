@@ -30,12 +30,6 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      # Install additional packages
-      - name: Install additional packages
-        run: |
-          npm install canvas --save-dev
-          npm install @babel/plugin-proposal-private-property-in-object --save-dev
-
       # Run tests
       - name: Run Tests
         run: npm test -- --watchAll=false
@@ -75,18 +69,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Authenticate with Google Cloud
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0.4.0
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # Set up gcloud SDK
+        # Authenticate with Google Cloud and set up gcloud SDK
       - name: Set up gcloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+        uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           export_default_credentials: true
+          install_components: 'gke-gcloud-auth-plugin'
+
 
       # Install GKE Auth Plugin
       - name: Install GKE Auth Plugin
