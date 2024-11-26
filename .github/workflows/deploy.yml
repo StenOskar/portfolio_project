@@ -38,8 +38,6 @@ jobs:
 
       # Run tests
       - name: Run Tests
-        env:
-          CI: true
         run: npm test -- --watchAll=false
 
       # Build the React app
