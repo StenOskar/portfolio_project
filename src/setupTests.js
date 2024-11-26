@@ -7,6 +7,9 @@ import '@testing-library/jest-dom';
 // setupTests.js
 HTMLCanvasElement.prototype.getContext = () => {
     return {
+        createLinearGradient: jest.fn().mockReturnValue({
+            addColorStop: jest.fn(),
+        }),
         clearRect: jest.fn(),
         fillRect: jest.fn(),
         fillStyle: jest.fn(),
