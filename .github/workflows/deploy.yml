@@ -102,5 +102,8 @@ jobs:
           kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
           kubectl apply -f k8s/service.yaml
 
-      - name: Run Smoke Test
+      - name: Make smoke-test.sh executable
+        run: chmod +x ./scripts/smoke-test.sh
+
+      - name: Run smoke tests
         run: ./scripts/smoke-test.sh
