@@ -50,11 +50,13 @@ jobs:
           docker build -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} .
           docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
 
-      # Authenticate with Google Cloud
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0.4.0
+      # Set up gcloud SDK and Authenticate with Google Cloud
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
 
       # Configure Docker for Artifact Registry
       - name: Configure Docker for Artifact Registry
@@ -75,23 +77,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Authenticate with Google Cloud
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0.4.0
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # Set up gcloud SDK
+      # Set up gcloud SDK and Authenticate with Google Cloud
       - name: Set up gcloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+        uses: google-github-actions/setup-gcloud@v1
         with:
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
-
-      # Install GKE Auth Plugin
-      - name: Install GKE Auth Plugin
-        run: |
-          gcloud components install gke-gcloud-auth-plugin
+          install_components: 'gke-gcloud-auth-plugin'
 
       # Configure kubectl
       - name: Configure kubectl
