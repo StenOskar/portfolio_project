@@ -69,6 +69,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+        # Authenticate with Google Cloud
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+            credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
         # Authenticate with Google Cloud and set up gcloud SDK
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v1
