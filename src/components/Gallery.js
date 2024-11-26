@@ -11,7 +11,7 @@ function Gallery({ openModal }) {
         <div className="gallery-container">
             {imageUrls.map((image, index) => (
                 <div className="card" key={index} onClick={() => openModal(image)}>
-                    <img src={image} alt={`Gallery Image ${index + 1}`} />
+                    <img src={image} alt={`Gallery item ${index + 1}`} />
                 </div>
             ))}
         </div>
