@@ -1,7 +1,3 @@
-# scripts/smoke-test.sh
-#!/bin/bash
-
-# Replace 'your-app-url' with the actual URL where your app is deployed
 APP_URL="http://35.228.30.185/"
 
 echo "Performing smoke test on $APP_URL"

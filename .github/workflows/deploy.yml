@@ -10,6 +10,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '**/README*'
 
 jobs:
   build:
@@ -75,13 +77,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-        # Authenticate with Google Cloud
+      # Authenticate with Google Cloud
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-            credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-        # Authenticate with Google Cloud and set up gcloud SDK
+      # Authenticate with Google Cloud and set up gcloud SDK
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -109,4 +111,3 @@ jobs:
       - name: Run smoke tests
         run: ./scripts/smoke-test.sh
         continue-on-error: false
-
