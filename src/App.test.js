@@ -3,9 +3,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
 /*
-    Mocking the AuroraBackground, Gallery, and Modal components
+    Mocking the Modal component
  */
-jest.mock('./components/AuroraBackground', () => () => <div data-testid="aurora-background" />);
 jest.mock('./components/Gallery', () => ({ openModal }) => (
     <div data-testid="gallery">
       <button onClick={() => openModal('image-src.jpg')}>Open Modal</button>
@@ -26,15 +25,6 @@ describe('App Component', () => {
     render(<App />);
     const welcomeElement = screen.getByText(/Welcome to the Portfolio Assignment/i);
     expect(welcomeElement).toBeInTheDocument();
-  });
-
-  /*
-    The test checks if the AuroraBackground component is rendered.
-   */
-  test('renders AuroraBackground component', () => {
-    render(<App />);
-    const auroraBackground = screen.getByTestId('aurora-background');
-    expect(auroraBackground).toBeInTheDocument();
   });
 
   /*
