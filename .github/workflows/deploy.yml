@@ -95,12 +95,12 @@ jobs:
       - name: Configure kubectl
         run: |
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          gcloud container clusters get-credentials ${{ CLUSTER_NAME}} --region europe-north1
+          gcloud container clusters get-credentials ${{ env.CLUSTER_NAME}} --region europe-north1
 
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ CLUSTER_NAME}}/react-app:${{ github.sha }}
+          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.CLUSTER_NAME}}/react-app:${{ github.sha }}
           kubectl apply -f k8s/service.yaml
 
       - name: Make smoke-test.sh executable
