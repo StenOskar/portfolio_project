@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./App.css";
-import AuroraBackground from "./components/AuroraBackground";
 import Gallery from "./components/Gallery";
 import Modal from "./components/Modal";
 
@@ -12,7 +11,6 @@ function App() {
 
     return (
         <div className="App">
-            <AuroraBackground />
             <header className="App-header">
                 <h1>Welcome to the Portfolio Assignment</h1>
                 <p>

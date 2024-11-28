@@ -2,6 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Modal from './Modal';
 
+/*
+    The Modal test suite
+ */
 describe('Modal Component', () => {
     test('renders the modal with the correct image', () => {
         const closeModalMock = jest.fn();

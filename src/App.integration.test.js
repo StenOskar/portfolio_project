@@ -2,6 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
+/*
+
+ */
 test('user can open an image in the modal from the gallery', () => {
     render(<App />);
 
