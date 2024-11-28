@@ -4,7 +4,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   CLUSTER_NAME: portfolio-cluster-1
   REGION: europe-north1
-  Repository: portfolio-repo
+  REPOSITORY: portfolio-repo
 
 on:
   push:
@@ -47,8 +47,8 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository }}/react-app:${{ github.sha }} .
-          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:latest
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }} .
+          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:latest
 
       # Authenticate with Google Cloud
       - name: Authenticate with Google Cloud
@@ -64,8 +64,8 @@ jobs:
       # Push Docker image to Artifact Registry
       - name: Push Docker image to Google Container Registry
         run: |
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:${{ github.sha }}
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:latest
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }}
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:latest
 
   deploy:
     runs-on: ubuntu-latest
