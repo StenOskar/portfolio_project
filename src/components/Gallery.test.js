@@ -11,7 +11,7 @@ describe('Gallery Component', () => {
         render(<Gallery openModal={openModalMock} />);
 
         const images = screen.getAllByRole('img');
-        expect(images).toHaveLength(4);
+        expect(images).toHaveLength(5);
 
         images.forEach((image, index) => {
             expect(image).toHaveAttribute('src');
@@ -26,6 +26,6 @@ describe('Gallery Component', () => {
         const image = screen.getByAltText('Gallery item 2');
         image.closest('.card').click();
 
-        expect(openModalMock).toHaveBeenCalledWith(expect.stringContaining('gakori.jpg'));
+        expect(openModalMock).toHaveBeenCalledWith(expect.stringContaining('Japan2.jpg'));
     });
 });

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
 /*
-
+    The App integration test suite
  */
 test('user can open an image in the modal from the gallery', () => {
     render(<App />);
@@ -13,7 +13,7 @@ test('user can open an image in the modal from the gallery', () => {
 
     const modalImage = screen.getByAltText('Modal');
     expect(modalImage).toBeInTheDocument();
-    expect(modalImage).toHaveAttribute('src', expect.stringContaining('Japan1.jpg'));
+    expect(modalImage).toHaveAttribute('src', expect.stringContaining('Japan3.jpg'));
 
     const closeButton = screen.getByText('×');
     fireEvent.click(closeButton);

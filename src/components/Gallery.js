@@ -1,10 +1,11 @@
 import React from "react";
-import BrageImage from "../images/Brage1.jpg";
-import GakoriImage from "../images/gakori.jpg";
 import Japan1 from "../images/Japan1.jpg";
 import Japan2 from "../images/Japan2.jpg";
+import Japan3 from "../images/Japan3.jpg";
+import Japan4 from "../images/Japan4.jpg";
+import Japan5 from "../images/Japan5.jpg";
 
-const imageUrls = [BrageImage, GakoriImage, Japan1, Japan2];
+const imageUrls = [Japan1, Japan2, Japan3, Japan4, Japan5];
 
 function Gallery({ openModal }) {
     return (

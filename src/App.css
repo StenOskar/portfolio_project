@@ -1,21 +1,27 @@
-html, body {
+body, html {
   margin: 0;
   padding: 0;
-}
-
-.App-header {
-  text-align: center
+  background-color: gray;
+  height: 100%;
 }
 
 .App {
-  background-color: gray;
+  text-align: center;
+  font-family: Arial, sans-serif;
   color: white;
-  height: 110vh;
-  margin: 0;
-  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: gray;
+  color: white;
+}
 
+/* Rest of your CSS remains the same */
 .gallery-container {
   display: flex;
   flex-wrap: wrap;
