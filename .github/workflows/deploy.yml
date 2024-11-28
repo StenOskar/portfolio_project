@@ -1,11 +1,5 @@
 name: CI/CD Pipeline for Google Kubernetes Engine
 
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  CLUSTER_NAME: portfolio-cluster-1
-  REGION: europe-north1
-  REPOSITORY: portfolio-repo
-
 on:
   push:
     branches:
