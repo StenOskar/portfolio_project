@@ -10,7 +10,8 @@ on:
   push:
     branches:
       - master
-
+    paths-ignore:
+      - '**/README*'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,8 +48,8 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }} .
-          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:latest
+          docker build -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} .
+          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
 
       # Authenticate with Google Cloud
       - name: Authenticate with Google Cloud
@@ -64,8 +65,8 @@ jobs:
       # Push Docker image to Artifact Registry
       - name: Push Docker image to Google Container Registry
         run: |
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:${{ github.sha }}
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY}}/react-app:latest
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -95,12 +96,12 @@ jobs:
       - name: Configure kubectl
         run: |
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          gcloud container clusters get-credentials ${{ env.CLUSTER_NAME}} --region europe-north1
+          gcloud container clusters get-credentials portfolio-cluster-1 --region europe-north1
 
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.CLUSTER_NAME}}/react-app:${{ github.sha }}
+          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
           kubectl apply -f k8s/service.yaml
 
       - name: Make smoke-test.sh executable
