@@ -1,5 +1,11 @@
 name: CI/CD Pipeline for Google Kubernetes Engine
 
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  CLUSTER_NAME: portfolio-cluster-1
+  REGION: europe-north1
+  Repository: portfolio-repo
+
 on:
   push:
     branches:
@@ -41,8 +47,8 @@ jobs:
       # Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} .
-          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/react-app:${{ github.sha }} .
+          docker tag europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:${{ github.sha }} europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:latest
 
       # Authenticate with Google Cloud
       - name: Authenticate with Google Cloud
@@ -58,8 +64,8 @@ jobs:
       # Push Docker image to Artifact Registry
       - name: Push Docker image to Google Container Registry
         run: |
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
-          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:latest
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:${{ github.sha }}
+          docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ Repository}}/react-app:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -80,26 +86,21 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           export_default_credentials: true
-          install_components: 'gke-gcloud-auth-plugin'
-
-
-      # Install GKE Auth Plugin
-      - name: Install GKE Auth Plugin
-        run: |
-          gcloud components install gke-gcloud-auth-plugin
+          install_components: gke-gcloud-auth-plugin
 
       # Configure kubectl
       - name: Configure kubectl
         run: |
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          gcloud container clusters get-credentials portfolio-cluster-1 --region europe-north1
+          gcloud container clusters get-credentials ${{ CLUSTER_NAME}} --region europe-north1
 
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/react-app:${{ github.sha }}
+          kubectl set image deployment/react-app react-app=europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ CLUSTER_NAME}}/react-app:${{ github.sha }}
           kubectl apply -f k8s/service.yaml
 
       - name: Make smoke-test.sh executable
@@ -107,3 +108,5 @@ jobs:
 
       - name: Run smoke tests
         run: ./scripts/smoke-test.sh
+        continue-on-error: false
+
