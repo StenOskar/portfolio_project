@@ -11,7 +11,7 @@ const Header = () => (
             assignment in IDATA2502.<br/>
             The application is containerized with Docker, stored in Google Artifact Registry,
             and deployed to a Google Kubernetes Engine (GKE) cluster.<br/>
-            The pipeline is automated using GitHub Actions.
+            The pipeline is automated using GitHub Actions. Pepsi is the best
         </p>
         <p>Below are some random images from the gallery</p>
     </header>
